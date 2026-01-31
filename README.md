@@ -1,54 +1,118 @@
-# React + TypeScript + Vite
+# Frontend – Social Matching Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Tinder-like social matching frontend built with **React, TypeScript, and Tailwind CSS**.  
+Users can sign up, complete their profile, discover other users, send/accept requests, and chat in real time.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tech Stack
 
-## Expanding the ESLint configuration
+- **React.js**
+- **TypeScript**
+- **Tailwind CSS**
+- **Socket.IO Client**
+- **Zod** – form validation
+- **AWS S3 Presigned URLs** – profile image uploads
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🧭 Application Routes
+
+### 🔐 Authentication
+- `/signup` – User registration
+- `/login` – User login
+
+After signup, users are redirected to `/profile-edit` to complete their profile.
+
+---
+
+### 🧑‍💼 Navigation
+- Navbar
+  - Left: Company logo + name
+  - Right: User avatar
+    - Dropdown:
+      - Profile → `/profile-edit`
+      - Logout
+
+---
+
+### 👤 Profile
+- `/profile-edit`
+  - Update personal details
+  - Upload profile image using S3 presigned URLs
+- Profile completeness is enforced
+  - Incomplete profiles cannot send requests (toast notification shown)
+
+---
+
+### 🏠 Feed
+- Home page displays user cards (Tinder-style)
+- Actions:
+  - ✔️ Interested
+  - ❌ Ignore
+- Users can swipe or click buttons
+- Automatically loads next user
+- Excludes:
+  - Logged-in user
+  - Existing connections
+  - Previously interacted users
+
+---
+
+### 🔁 Requests & Connections
+- `/requests`
+  - View incoming connection requests
+  - Accept or reject requests
+- `/connections`
+  - View accepted connections
+  - Option to message connected users
+
+---
+
+### 💬 Messaging
+- Real-time chat using **Socket.IO**
+- Only available between accepted connections
+- Chat history persists across sessions
+
+---
+
+### 📨 Contact Us
+- `/contact-us`
+- Available only to logged-in users
+- Backend fetches sender details from JWT
+
+---
+
+### 🧠 UX Enhancements
+- Multi-select skill search
+- Selected skills displayed as pills
+- Toast notifications for errors & validations
+- Footer pages:
+  - Terms & Conditions
+  - Privacy Policy
+
+---
+
+## 🧾 Validation Strategy
+
+- **Zod** used for:
+  - Signup/Login forms
+  - Profile edit form
+- Prevents invalid data before hitting backend
+
+---
+
+## ▶️ Running Locally
+
+```bash
+pnpm install
+pnpm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📌 Notes
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+* Authentication is handled via **HTTP-only cookies**
+* Image uploads are done directly to S3 using presigned URLs
+* Frontend and backend are deployed on a single EC2 instance in production
